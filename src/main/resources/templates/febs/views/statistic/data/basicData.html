@@ -1,0 +1,116 @@
+<div class="layui-fluid layui-anim febs-anim" id="statistic-eximport" lay-title="基础数据">
+    <div class="layui-row febs-container">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body febs-table-full">
+                    <button class="layui-btn  layui-btn-sm layui-btn-primary febs-button-blue-plain" id="template-download"
+                            shiro:hasPermission="eximport:template">
+                        <i class="layui-icon">&#xe82a;</i> 模板下载
+                    </button>
+                    <button class="layui-btn  layui-btn-sm layui-btn-primary febs-button-green-plain " id="export"
+                            shiro:hasPermission="eximport:export">
+                        <i class="layui-icon">&#xe7a8;</i> 导出Excel
+                    </button>
+                    <button class="layui-btn  layui-btn-sm layui-btn-success" id="import"
+                            shiro:hasPermission="eximport:import">
+                        <i class="layui-icon">&#xe7aa;</i> 导入Excel
+                    </button>
+                    <table lay-filter="eximportTable" lay-data="{id: 'eximportTable'}"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/html" id="basic-data-platform">
+    {{#
+    let platform = {
+    0: {title: '抖音', color: 'green'},
+    1: {title: '快手', color: 'volcano'},
+    2: {title: '小红书', color: 'red'}
+    }[d.platform];
+    }}
+    <span class="layui-badge febs-bg-{{platform.color}}">{{ platform.title }}</span>
+</script>
+<script data-th-inline="none" type="text/javascript">
+    layui.use(['jquery', 'table', 'febs', 'upload'], function () {
+        let $ = layui.jquery,
+            febs = layui.febs,
+            upload = layui.upload,
+            table = layui.table,
+            $view = $('#statistic-eximport'),
+            tableIns;
+
+        initTable();
+
+        upload.render({
+            elem: '#import',
+            url: ctx + 'basicData/import',
+            accept: 'file',
+            exts: 'xlsx', // 只能上传 .xlsx格式
+            size: 5 * 1024, // kb
+            before: function () {
+                febs.view.loadBar.start();
+            },
+            done: function (res) {
+                febs.view.loadBar.finish();
+                if (res.code === 200) {
+                    // 刷新 table
+                    tableIns.reload({page: {curr: 1}});
+                    let data = res.data;
+                    // 弹出导入结果
+                    febs.modal.open('导入结果', 'others/eximport/result', {
+                        area: $(window).width() <= 750 ? '95%' : '1000px',
+                        data: data
+                    });
+                }
+            }, error: function (res) {
+                //请求异常回调
+                console.error(res);
+                febs.view.loadBar.error();
+                febs.alert.error('导入失败！');
+            }
+        });
+
+        $view.on('click', '#template-download', function () {
+            febs.download(ctx + 'basicData/template', null, 'Excel导入模板.xlsx');
+        });
+
+        $view.on('click', '#export', function () {
+            let params = {};
+            params.pageSize = $view.find(".layui-laypage-limits option:selected").val();
+            params.pageNum = $view.find(".layui-laypage-em").next().html();
+            febs.download(ctx + 'basicData/excel', params, 'Excel导出结果.xlsx');
+        });
+
+        function initTable() {
+            tableIns = febs.table.init({
+                elem: $view.find('table'),
+                id: 'eximportTable',
+                url: ctx + 'basicData',
+                cols: [[
+                    {field: 'id', title: 'id', hide: true},
+                    {field: 'importId', title: '导入记录id', hide: true},
+                    {field: 'userId', title: '部门人id', hide: true},
+                    {field: 'userName', title: '人员'},
+                    {title: '平台名称', templet: '#statistic-user-status'},
+                    {field: 'talent', title: '达人'},
+                    {field: 'url', title: '链接'},
+                    {field: 'likesOne', title: '点赞'},
+                    {field: 'quotation', title: '报价'},
+                    {field: 'remark', title: '备注'},
+                    {field: 'tiktokeAdd', title: '抖加'},
+                    {field: 'likesTwo', title: '点赞'},
+                    {field: 'clarity', title: '清晰度'},
+                    {field: 'copyWriting', title: '文案'},
+                    {field: 'shape', title: '睫毛款式'},
+                    {field: 'popular', title: '作品热门得分'},
+                    {field: 'maintain', title: '作品维护'},
+                    {field: 'cost', title: '投放成本'},
+                    {field: 'totalScore', title: '总分'},
+                    {field: 'importDate', title: ''},
+                ]]
+            });
+        }
+
+    })
+</script>

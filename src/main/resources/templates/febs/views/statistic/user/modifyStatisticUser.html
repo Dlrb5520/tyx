@@ -1,0 +1,79 @@
+<style>
+    #statistic-user-update {
+        padding: 20px 25px 25px 0;
+    }
+</style>
+<div class="layui-fluid" id="statistic-user-update">
+    <form class="layui-form" action="" lay-filter="user-update-form">
+        <div class="layui-form-item febs-hide">
+            <label class="layui-form-label febs-form-item-require">用户id：</label>
+            <div class="layui-input-block">
+                <input type="text" name="id" data-th-value="${statisticUser.id}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label febs-form-item-require">用户名：</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" minlength="4" maxlength="10" data-th-id="${statisticUser.name}"
+                       lay-verify="range|username" autocomplete="off" class="layui-input" readonly>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label febs-form-item-require">在职情况：</label>
+            <div class="layui-input-block">
+                <input type="radio" name="isResign" value="2" title="在职">
+                <input type="radio" name="isResign" value="1" title="离职">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label febs-form-item-require">性别：</label>
+            <div class="layui-input-block">
+                <input type="radio" name="gender" value="1" title="男性">
+                <input type="radio" name="gender" value="2" title="女性">
+                <input type="radio" name="gender" value="3" title="其他">
+            </div>
+        </div>
+        <div class="layui-form-item febs-hide">
+            <button class="layui-btn" lay-submit="" lay-filter="user-update-form-submit" id="submit"></button>
+        </div>
+    </form>
+</div>
+
+<script data-th-inline="javascript">
+    layui.use(['febs', 'form', 'validate'], function () {
+        let $ = layui.$,
+            febs = layui.febs,
+            layer = layui.layer,
+            form = layui.form,
+            statisticUser = [[${statisticUser}]],
+            validate = layui.validate;
+
+        form.verify(validate);
+        form.render();
+
+        initUserValue();
+
+
+        function initUserValue() {
+            form.val("user-update-form", {
+                "id":statisticUser.id,
+                "name": statisticUser.name,
+                "isResign": statisticUser.isResign,
+                "gender": statisticUser.gender
+            });
+        }
+
+        form.on('submit(user-update-form-submit)', function (data) {
+            if (febs.nativeEqual(data.field, user)) {
+                febs.alert.warn('数据未作任何修改！');
+                return false;
+            }
+            febs.post(ctx + 'user/update', data.field, function () {
+                layer.closeAll();
+                febs.alert.success(user.username + ' 用户数据修改成功');
+                $('#febs-user').find('#query').click();
+            });
+            return false;
+        });
+    });
+</script>

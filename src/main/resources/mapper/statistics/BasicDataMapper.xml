@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.statistic.mapper.BasicDataMapper">
+
+    <sql id="countBasicData">
+        SELECT COUNT(d.ID)
+        FROM t_basic_data d
+        WHERE
+        1=1
+        <if test="basicData.userId != null and basicData.userId != ''">
+            AND d.USER_ID = #{basicData.userId}
+        </if>
+        <if test="basicData.importDateStar != null and basicData.importDateStar !=''">
+            And d.IMPORT_DATE &gt;= #{basicData.importDateStar}
+        </if>
+        <if test="basicData.importDateEnd!= null and basicData.importDateEnd !=''">
+            And d.IMPORT_DATE &lt;= #{basicData.importDateEnd}
+        </if>
+    </sql>
+
+    <sql id="findBasicData">
+        SELECT d.ID,
+        d.IMPORT_ID,
+        d.USER_ID,
+        (SELECT u.NAME FROM t_statistics_user u WHERE u.ID = d.USER_ID) AS UserName,
+        d.PLATFORM,
+        CASE PLATFORM
+        WHEN '0' THEN '抖音'
+        WHEN '1' THEN '快手'
+        ELSE '小红书' END AS platformName,
+        d.TALENT,
+        d.URL,
+        d.LIKES_ONE,
+        d.QUOTATION,
+        d.REMARK,
+        d.TIKTOKE_ADD,
+        d.LIKES_TWO,
+        d.CLARITY,
+        d.COPY_WRITING,
+        d.SHAPE,
+        d.POPULAR,
+        d.MAINTAIN,
+        d.COST,
+        d.TOTAL_SCORE,
+        d.IMPORT_DATE
+        FROM t_basic_data d
+        WHERE
+        1=1
+
+    </sql>
+
+
+    <select id="conutAllBasicData" parameterType="basicData" resultType="long">
+        <include refid="countBasicData"></include>
+    </select>
+
+
+    <select id="findBasicDataDetailPage" parameterType="basicData" resultType="basicData">
+        <include refid="findBasicData"></include>
+        <if test="basicData.userId != null and basicData.userId != ''">
+            AND d.USER_ID = #{basicData.userId}
+        </if>
+        <if test="basicData.importDateStar != null and basicData.importDateStar !=''">
+            And d.IMPORT_DATE &gt;= #{basicData.importDateStar}
+        </if>
+        <if test="basicData.importDateEnd!= null and basicData.importDateEnd !=''">
+            And d.IMPORT_DATE &lt;= #{basicData.importDateEnd}
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.statistic.mapper.StatisticUserMapper">
+
+    <sql id="countStatisticUser">
+        SELECT COUNT(u.ID)
+        FROM t_statistics_user u
+        WHERE
+        1=1
+        <if test="statisticUser.name != null and statisticUser.name != ''">
+            AND u.NAME LIKE CONCAT(CONCAT('%',#{statisticUser.name},'%'))
+        </if>
+        <if test="statisticUser.gender!= null and statisticUser.gender != ''">
+            AND u.GENDER = #{statisticUser.gender}
+        </if>
+        <if test="statisticUser.isResign!= null and statisticUser.isResign != ''">
+            AND u.IS_RESIGN = #{statisticUser.isResign}
+        </if>
+    </sql>
+
+    <sql id="findStatisticUser">
+        SELECT u.ID,
+        u.NAME,
+        u.GENDER,
+        u.IS_RESIGN,
+        u.CREATE_TIME
+        FROM t_statistics_user u
+        WHERE
+        1=1
+        <if test="statisticUser.name != null and statisticUser.name != ''">
+            AND u.NAME LIKE CONCAT(CONCAT('%',#{statisticUser.name},'%'))
+        </if>
+        <if test="statisticUser.gender!= null and statisticUser.gender != ''">
+            AND u.GENDER = #{statisticUser.gender}
+        </if>
+        <if test="statisticUser.isResign!= null and statisticUser.isResign != ''">
+            AND u.IS_RESIGN = #{statisticUser.isResign}
+        </if>
+        ORDER BY CREATE_TIME DESC
+    </sql>
+
+    <select id="findStatisticUserDetailPage" parameterType="statisticUser" resultType="statisticUser">
+        <include refid="findStatisticUser"></include>
+    </select>
+
+    <select id="conutAllStatisticUser" parameterType="statisticUser" resultType="int">
+        <include refid="countStatisticUser"></include>
+    </select>
+</mapper>
