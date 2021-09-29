@@ -10,4 +10,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @Description:
  */
 public interface IImportRecordService extends IService<ImportRecord> {
+
+    /**
+     * 新增
+     * @param importRecord
+     */
+    Long saveImportRecord(ImportRecord importRecord);
 }

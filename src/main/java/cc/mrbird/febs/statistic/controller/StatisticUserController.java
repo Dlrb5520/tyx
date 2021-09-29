@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * @ClassName StatisticUserController
  * @Author yangli
@@ -50,4 +52,9 @@ public class StatisticUserController extends BaseController {
         return new FebsResponse().success();
     }
 
+    @PostMapping("select/list")
+    public FebsResponse selectStatisticUserList (StatisticUser user) {
+        List<StatisticUser> statisticUserList = statisticUserService.selectStatisticUserList(user);
+        return  new FebsResponse().success().data(statisticUserList);
+    }
 }

@@ -29,7 +29,19 @@ public class BasicDataServiceImpl extends ServiceImpl<BasicDataMapper, BasicData
     private final FebsProperties properties;
 
     @Override
-    public void batchInsert(List<BasicData> basicDataList) {
+    public void batchInsert(List<BasicData> basicDataList,Long recordId) {
+        basicDataList.forEach(it->{
+            // 设置导入记录id
+            it.setImportId(recordId.intValue());
+            // 设置平台名称
+            if (it.getPlatformName().indexOf("抖音") !=-1) {
+                it.setPlatform(0);
+            } else if (it.getPlatformName().indexOf("快手") !=-1) {
+                it.setPlatform(1);
+            } else {
+                it.setPlatform(2);
+            }
+        });
         saveBatch(basicDataList, properties.getMaxBatchInsertNum());
     }
 

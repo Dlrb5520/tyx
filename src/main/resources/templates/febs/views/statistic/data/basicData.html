@@ -1,20 +1,47 @@
 <div class="layui-fluid layui-anim febs-anim" id="statistic-eximport" lay-title="基础数据">
     <div class="layui-row febs-container">
+
         <div class="layui-col-md12">
             <div class="layui-card">
                 <div class="layui-card-body febs-table-full">
-                    <button class="layui-btn  layui-btn-sm layui-btn-primary febs-button-blue-plain" id="template-download"
-                            shiro:hasPermission="eximport:template">
-                        <i class="layui-icon">&#xe82a;</i> 模板下载
-                    </button>
-                    <button class="layui-btn  layui-btn-sm layui-btn-primary febs-button-green-plain " id="export"
-                            shiro:hasPermission="eximport:export">
-                        <i class="layui-icon">&#xe7a8;</i> 导出Excel
-                    </button>
-                    <button class="layui-btn  layui-btn-sm layui-btn-success" id="import"
-                            shiro:hasPermission="eximport:import">
-                        <i class="layui-icon">&#xe7aa;</i> 导入Excel
-                    </button>
+                    <form class="layui-form layui-table-form">
+                        <div class="layui-row">
+                            <div class="layui-col-md10">
+                                <div class="layui-form-item">
+                                    <div class="layui-inline">
+                                        <button class="layui-btn  layui-btn-sm layui-btn-primary febs-button-blue-plain" id="template-download"
+                                                shiro:hasPermission="eximport:template">
+                                            <i class="layui-icon">&#xe82a;</i> 模板下载
+                                        </button>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <button class="layui-btn  layui-btn-sm layui-btn-primary febs-button-green-plain " id="export"
+                                                shiro:hasPermission="eximport:export">
+                                            <i class="layui-icon">&#xe7a8;</i> 导出Excel
+                                        </button>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <button class="layui-btn  layui-btn-sm layui-btn-success" id="import_click"
+                                                shiro:hasPermission="eximport:import">
+                                            <i class="layui-icon">&#xe7aa;</i> 导入Excel
+                                        </button>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <div class="layui-input-inline">
+                                            <select name="statisticUser" id="statisticUser" lay-filter="statisticUser">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline" style="display: none">
+                                        <button class="layui-btn  layui-btn-sm layui-btn-success" id="import"
+                                                shiro:hasPermission="eximport:import">
+                                            <i class="layui-icon">&#xe7aa;</i> 导入Excel
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                     <table lay-filter="eximportTable" lay-data="{id: 'eximportTable'}"></table>
                 </div>
             </div>
@@ -32,21 +59,38 @@
     <span class="layui-badge febs-bg-{{platform.color}}">{{ platform.title }}</span>
 </script>
 <script data-th-inline="none" type="text/javascript">
-    layui.use(['jquery', 'table', 'febs', 'upload'], function () {
+    layui.use(['jquery', 'table', 'febs', 'upload','form','layer'], function () {
         let $ = layui.jquery,
             febs = layui.febs,
             upload = layui.upload,
             table = layui.table,
             $view = $('#statistic-eximport'),
+            form = layui.form,
+            $statisticUser = $view.find('#statisticUser'),
+            layer = layui.layer,
             tableIns;
-
+        // 初始化表单控件
+        form.render();
+        // 加载表格
         initTable();
+        // 加载select框
+        getStatisticUser();
+
+        let statisticUserId = -1;
+        $('#import_click').click(function (event) {
+            if (statisticUserId == -1) {
+                //layer.msg('请选择导入人');
+            } else {
+                $('#import').trigger('click');
+            }
+            event.stopPropagation();    //  阻止事件冒泡
+        })
 
         upload.render({
             elem: '#import',
             url: ctx + 'basicData/import',
             accept: 'file',
-            exts: 'xlsx', // 只能上传 .xlsx格式
+            exts: 'xlsx|xls', // 只能上传 .xlsx格式
             size: 5 * 1024, // kb
             before: function () {
                 febs.view.loadBar.start();
@@ -92,7 +136,7 @@
                     {field: 'importId', title: '导入记录id', hide: true},
                     {field: 'userId', title: '部门人id', hide: true},
                     {field: 'userName', title: '人员'},
-                    {title: '平台名称', templet: '#statistic-user-status'},
+                    {title: '平台名称', templet: '#basic-data-platform'},
                     {field: 'talent', title: '达人'},
                     {field: 'url', title: '链接'},
                     {field: 'likesOne', title: '点赞'},
@@ -109,6 +153,21 @@
                     {field: 'totalScore', title: '总分'},
                     {field: 'importDate', title: ''},
                 ]]
+            });
+        }
+
+
+        function getStatisticUser() {
+            febs.post(ctx + 'statistic/select/list', null, function (r) {
+                let options = '<option value="">请选择</option>';
+                for (let item of r.data) {
+                    options += '<option value="' + item.id + '">' + item.name + '</option>'
+                }
+                $statisticUser.append(options)
+                form.render();
+                form.on('select(statisticUser)', function(data){
+                    statisticUserId = data.value;
+                });
             });
         }
 

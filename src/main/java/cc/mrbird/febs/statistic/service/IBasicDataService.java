@@ -19,7 +19,7 @@ public interface IBasicDataService extends IService<BasicData> {
      * 批量插入
      * @param basicDataList
      */
-    void batchInsert(List<BasicData> basicDataList);
+    void batchInsert(List<BasicData> basicDataList,Long recordId);
 
 
     /**

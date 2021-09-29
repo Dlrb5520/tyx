@@ -19,4 +19,14 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class ImportRecordServiceImpl extends ServiceImpl<ImportRecordMapper, ImportRecord> implements IImportRecordService {
+
+    /**
+     * 新增
+     * @param importRecord
+     */
+    @Override
+    public Long saveImportRecord(ImportRecord importRecord) {
+        this.baseMapper.insert(importRecord);
+        return importRecord.getId();
+    }
 }

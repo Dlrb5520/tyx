@@ -5,6 +5,8 @@ import cc.mrbird.febs.statistic.entity.StatisticUser;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 
 /**
  * @InterfaceName StatisticUserService
@@ -39,5 +41,12 @@ public interface IStatisticUserService extends IService<StatisticUser> {
      * @param userIds
      */
     void deleteStatisticUser(String[] userIds);
+
+    /**
+     *
+     * @param user
+     * @return
+     */
+    List<StatisticUser>  selectStatisticUserList(StatisticUser user);
 
 }

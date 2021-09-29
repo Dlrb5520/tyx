@@ -46,4 +46,8 @@
     <select id="conutAllStatisticUser" parameterType="statisticUser" resultType="int">
         <include refid="countStatisticUser"></include>
     </select>
+
+    <select id="selectStatisticUserList" parameterType="statisticUser" resultType="statisticUser">
+        <include refid="findStatisticUser"></include>
+    </select>
 </mapper>

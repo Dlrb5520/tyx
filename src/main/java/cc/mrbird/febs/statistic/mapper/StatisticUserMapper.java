@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * @InterfaceName StatisticUserMapper.xml
  * @Author yangli
@@ -17,4 +19,6 @@ public interface StatisticUserMapper extends BaseMapper<StatisticUser> {
     <T> IPage<StatisticUser> findStatisticUserDetailPage(Page<T> page, @Param("statisticUser") StatisticUser statisticUser);
 
     int conutAllStatisticUser (@Param("statisticUser") StatisticUser statisticUser);
+
+    List<StatisticUser>  selectStatisticUserList( @Param("statisticUser") StatisticUser statisticUser);
 }

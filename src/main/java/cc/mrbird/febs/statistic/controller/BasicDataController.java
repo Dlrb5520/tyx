@@ -7,7 +7,11 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.others.entity.Eximport;
 import cc.mrbird.febs.statistic.entity.BasicData;
+import cc.mrbird.febs.statistic.entity.ImportRecord;
 import cc.mrbird.febs.statistic.service.IBasicDataService;
+import cc.mrbird.febs.statistic.service.IImportRecordService;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -48,6 +52,8 @@ import java.util.stream.IntStream;
 public class BasicDataController extends BaseController {
 
     private final IBasicDataService basicDataService;
+    
+    private final IImportRecordService iImportRecordService;
 
     /**
      * 基础数据导入
@@ -84,9 +90,16 @@ public class BasicDataController extends BaseController {
                 error.add(ImmutableMap.of("row", row, "errorFields", errorFields));
             }
         });
+
+        // 插入记录表
+        ImportRecord importRecord = new ImportRecord();
+        importRecord.setImportName("导入记录");
+        importRecord.setCreateDate(new Date());
+        Long recordId = iImportRecordService.saveImportRecord(importRecord);
+
         if (CollectionUtils.isNotEmpty(data)) {
             // 将合法的记录批量入库
-            basicDataService.batchInsert(data);
+            basicDataService.batchInsert(data,recordId);
         }
         ImmutableMap<String, Object> result = ImmutableMap.of(
                 "time", stopwatch.stop().toString(),
@@ -138,8 +151,20 @@ public class BasicDataController extends BaseController {
     @RequiresPermissions("eximport:export")
     @ControllerEndpoint(exceptionMessage = "导出Excel失败")
     public void export(QueryRequest queryRequest, BasicData basicData, HttpServletResponse response) {
+        IPage<BasicData> basicDataList = basicDataService.findBasicDataList(queryRequest, basicData);
+        if (ObjectUtils.isNotEmpty(basicDataList.getRecords())) {
+            basicDataList.getRecords().forEach(it->{
+                if (it.getPlatform() == 0) {
+                    it.setPlatformName("抖音");
+                } else if (it.getPlatform() == 1) {
+                    it.setPlatformName("快手");
+                } else {
+                    it.setPlatformName("小红书");
+                }
+            });
+        }
         ExcelKit.$Export(BasicData.class, response)
-                .downXlsx(basicDataService.findBasicDataList(queryRequest, basicData).getRecords(), false);
+                .downXlsx(basicDataList.getRecords(), false);
     }
 
     /**

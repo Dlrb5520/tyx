@@ -74,4 +74,15 @@ public class StatisticUserServiceImpl extends ServiceImpl<StatisticUserMapper, S
         List<String> list = Arrays.asList(userIds);
         this.baseMapper.deleteBatchIds(list);
     }
+
+
+    /**
+     * select 不分页
+     * @param user
+     * @return
+     */
+    @Override
+    public List<StatisticUser> selectStatisticUserList(StatisticUser user) {
+        return this.baseMapper.selectStatisticUserList(user);
+    }
 }
