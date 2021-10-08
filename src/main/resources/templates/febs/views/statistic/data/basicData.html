@@ -1,3 +1,8 @@
+<style>
+    .ma{
+        margin-left: 1.8%;
+    }
+</style>
 <div class="layui-fluid layui-anim febs-anim" id="statistic-eximport" lay-title="基础数据">
     <div class="layui-row febs-container">
 
@@ -9,39 +14,46 @@
                             <div class="layui-col-md10">
                                 <div class="layui-form-item">
                                     <div class="layui-inline">
-                                        <button class="layui-btn  layui-btn-sm layui-btn-primary febs-button-blue-plain" id="template-download"
+                                        <!--<button class="layui-btn  layui-btn-sm layui-btn-primary febs-button-blue-plain" id="template-download"
                                                 shiro:hasPermission="eximport:template">
                                             <i class="layui-icon">&#xe82a;</i> 模板下载
-                                        </button>
+                                        </button>-->
                                     </div>
                                     <div class="layui-inline">
-                                        <button class="layui-btn  layui-btn-sm layui-btn-primary febs-button-green-plain " id="export"
+                                        <!--<button class="layui-btn  layui-btn-sm layui-btn-primary febs-button-green-plain " id="export"
                                                 shiro:hasPermission="eximport:export">
                                             <i class="layui-icon">&#xe7a8;</i> 导出Excel
-                                        </button>
+                                        </button>-->
                                     </div>
                                     <div class="layui-inline">
-                                        <button class="layui-btn  layui-btn-sm layui-btn-success" id="import_click"
+                                        <!--<button class="layui-btn  layui-btn-sm layui-btn-success" id="import"
                                                 shiro:hasPermission="eximport:import">
                                             <i class="layui-icon">&#xe7aa;</i> 导入Excel
-                                        </button>
+                                        </button>-->
                                     </div>
                                     <div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm">导入人员:</label>
                                         <div class="layui-input-inline">
                                             <select name="statisticUser" id="statisticUser" lay-filter="statisticUser">
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="layui-inline" style="display: none">
-                                        <button class="layui-btn  layui-btn-sm layui-btn-success" id="import"
-                                                shiro:hasPermission="eximport:import">
-                                            <i class="layui-icon">&#xe7aa;</i> 导入Excel
-                                        </button>
-                                    </div>
                                 </div>
                             </div>
                         </div>
                     </form>
+                    <button class="layui-btn  layui-btn-sm layui-btn-primary febs-button-blue-plain ma" id="template-download"
+                            shiro:hasPermission="eximport:template">
+                        <i class="layui-icon">&#xe82a;</i> 模板下载
+                    </button>
+                    <button class="layui-btn  layui-btn-sm layui-btn-primary febs-button-green-plain " id="export"
+                            shiro:hasPermission="eximport:export">
+                        <i class="layui-icon">&#xe7a8;</i> 导出Excel
+                    </button>
+                    <button class="layui-btn  layui-btn-sm layui-btn-success" id="import"
+                            shiro:hasPermission="eximport:import">
+                        <i class="layui-icon">&#xe7aa;</i> 导入Excel
+                    </button>
                     <table lay-filter="eximportTable" lay-data="{id: 'eximportTable'}"></table>
                 </div>
             </div>
@@ -76,24 +88,19 @@
         // 加载select框
         getStatisticUser();
 
-        let statisticUserId = -1;
-        $('#import_click').click(function (event) {
-            if (statisticUserId == -1) {
-                //layer.msg('请选择导入人');
-            } else {
-                $('#import').trigger('click');
-            }
-            event.stopPropagation();    //  阻止事件冒泡
-        })
-
+        var statisticUserId = -1;
         upload.render({
             elem: '#import',
             url: ctx + 'basicData/import',
             accept: 'file',
+            header: {id:statisticUserId},
             exts: 'xlsx|xls', // 只能上传 .xlsx格式
             size: 5 * 1024, // kb
             before: function () {
                 febs.view.loadBar.start();
+                this.data = {
+                    userId:statisticUserId
+                }
             },
             done: function (res) {
                 febs.view.loadBar.finish();
@@ -102,10 +109,13 @@
                     tableIns.reload({page: {curr: 1}});
                     let data = res.data;
                     // 弹出导入结果
-                    febs.modal.open('导入结果', 'others/eximport/result', {
+                    /*febs.modal.open('导入结果', 'others/eximport/result', {
                         area: $(window).width() <= 750 ? '95%' : '1000px',
                         data: data
-                    });
+                    });*/
+                    febs.alert.success('导入成功');
+                } else {
+                    febs.alert.field('导入失败');
                 }
             }, error: function (res) {
                 //请求异常回调
@@ -132,26 +142,26 @@
                 id: 'eximportTable',
                 url: ctx + 'basicData',
                 cols: [[
-                    {field: 'id', title: 'id', hide: true},
-                    {field: 'importId', title: '导入记录id', hide: true},
-                    {field: 'userId', title: '部门人id', hide: true},
-                    {field: 'userName', title: '人员'},
-                    {title: '平台名称', templet: '#basic-data-platform'},
-                    {field: 'talent', title: '达人'},
-                    {field: 'url', title: '链接'},
-                    {field: 'likesOne', title: '点赞'},
-                    {field: 'quotation', title: '报价'},
-                    {field: 'remark', title: '备注'},
-                    {field: 'tiktokeAdd', title: '抖加'},
-                    {field: 'likesTwo', title: '点赞'},
-                    {field: 'clarity', title: '清晰度'},
-                    {field: 'copyWriting', title: '文案'},
-                    {field: 'shape', title: '睫毛款式'},
-                    {field: 'popular', title: '作品热门得分'},
-                    {field: 'maintain', title: '作品维护'},
-                    {field: 'cost', title: '投放成本'},
-                    {field: 'totalScore', title: '总分'},
-                    {field: 'importDate', title: ''},
+                    {field: 'id', title: 'id', hide: true,minWidth: 100},
+                    {field: 'importId', title: '导入记录id', hide: true,minWidth: 100},
+                    {field: 'userId', title: '部门人id', hide: true,minWidth: 100},
+                    {field: 'userName', title: '人员',minWidth: 100},
+                    {title: '平台名称', templet: '#basic-data-platform',minWidth: 80},
+                    {field: 'talent', title: '达人',minWidth: 100},
+                    {field: 'url', title: '链接',minWidth: 150},
+                    {field: 'likesOne', title: '点赞',minWidth: 70},
+                    {field: 'quotation', title: '报价',minWidth: 100},
+                    {field: 'remark', title: '备注',minWidth: 100},
+                    {field: 'tiktokeAdd', title: '抖加',minWidth: 70},
+                    {field: 'likesTwo', title: '点赞',minWidth: 70},
+                    {field: 'clarity', title: '清晰度',minWidth: 80},
+                    {field: 'copyWriting', title: '文案',minWidth: 70},
+                    {field: 'shape', title: '睫毛款式',minWidth: 100},
+                    {field: 'popular', title: '作品热门得分',minWidth: 120},
+                    {field: 'maintain', title: '作品维护',minWidth: 100},
+                    {field: 'cost', title: '投放成本',minWidth: 100},
+                    {field: 'totalScore', title: '总分',minWidth: 100},
+                    {field: 'importDate', title: '导入时间',minWidth: 150},
                 ]]
             });
         }
@@ -165,9 +175,13 @@
                 }
                 $statisticUser.append(options)
                 form.render();
+
                 form.on('select(statisticUser)', function(data){
+                    console.log(data.value)
                     statisticUserId = data.value;
+                    console.log("id =========== " + statisticUserId);
                 });
+
             });
         }
 

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @InterfaceName IBasicDataService
@@ -30,4 +31,11 @@ public interface IBasicDataService extends IService<BasicData> {
      * @return IPage<BasicData>
      */
     IPage<BasicData> findBasicDataList(QueryRequest request, BasicData basicData);
+
+
+    /**
+     * 删除
+     * @param params
+     */
+    void deleteBasicData(Map<String,String> params);
 }

@@ -13,7 +13,7 @@
         <if test="basicData.importDateStar != null and basicData.importDateStar !=''">
             And d.IMPORT_DATE &gt;= #{basicData.importDateStar}
         </if>
-        <if test="basicData.importDateEnd!= null and basicData.importDateEnd !=''">
+        <if test="basicData.importDateEnd != null and basicData.importDateEnd !=''">
             And d.IMPORT_DATE &lt;= #{basicData.importDateEnd}
         </if>
     </sql>
@@ -22,7 +22,7 @@
         SELECT d.ID,
         d.IMPORT_ID,
         d.USER_ID,
-        (SELECT u.NAME FROM t_statistics_user u WHERE u.ID = d.USER_ID) AS UserName,
+        (SELECT u.NAME FROM t_statistics_user u WHERE u.ID = d.USER_ID) AS userName,
         d.PLATFORM,
         CASE PLATFORM
         WHEN '0' THEN '抖音'
@@ -50,7 +50,7 @@
     </sql>
 
 
-    <select id="conutAllBasicData" parameterType="basicData" resultType="long">
+    <select id="conutAllBasicData" parameterType="basicData" resultType="int">
         <include refid="countBasicData"></include>
     </select>
 

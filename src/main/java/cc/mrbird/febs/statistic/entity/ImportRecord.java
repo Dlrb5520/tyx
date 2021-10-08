@@ -24,7 +24,7 @@ public class ImportRecord implements Serializable {
 
 
     public static final Long TOP_NODE = 0L;
-    private static final long serialVersionUID = 5702271568363798755L;
+    private static final long serialVersionUID = 5702254633263798755L;
 
 
 
@@ -53,7 +53,7 @@ public class ImportRecord implements Serializable {
     /**
      * 总分
      */
-    @TableField("导入时间")
+    @TableField("CREATE_DATE")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createDate;
 
@@ -62,7 +62,19 @@ public class ImportRecord implements Serializable {
      * 用户名称
      */
     @TableField(exist = false)
-    private String UserName;
+    private String userName;
+
+    /**
+     * 导入开始时间
+     */
+    @TableField(exist = false)
+    private String createDateStar;
+
+    /**
+     * 导入结束时间
+     */
+    @TableField(exist = false)
+    private String createDateEnd;
 
 
 

@@ -199,6 +199,19 @@ public class BasicData implements Serializable {
     @TableField(exist = false)
     private String userName;
 
+    /**
+     * 导入开始时间
+     */
+    @TableField(exist = false)
+    private String importDateStar;
+
+
+    /**
+     * 导入结束时间
+     */
+    @TableField(exist = false)
+    private String importDateEnd;
+
 
 
 

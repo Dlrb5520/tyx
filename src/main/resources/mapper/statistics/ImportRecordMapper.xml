@@ -2,4 +2,48 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cc.mrbird.febs.statistic.mapper.ImportRecordMapper">
 
+    <sql id="getList">
+        SELECT r.ID,
+               r.IMPORT_NAME,
+               r.CREATE_DATE,
+               r.USER_ID,
+               (SELECT u.NAME FROM t_statistics_user u WHERE u.ID = r.USER_ID) AS userName
+        FROM t_import_record r
+        WHERE 1 = 1
+    </sql>
+
+    <sql id="getCount">
+        SELECT COUNT(r.ID)
+        FROM t_import_record r
+        WHERE 1 = 1
+    </sql>
+
+    <select id="getImportRecordList" parameterType="importRecord" resultType="importRecord">
+        <include refid="getList"></include>
+        <if test="importRecord.userId != null and importRecord.userId != ''">
+            AND r.USER_ID = #{importRecord.userId}
+        </if>
+        <if test="importRecord.createDateStar != null and importRecord.createDateStar != ''">
+            AND r.CREATE_DATE &gt;= #{importRecord.createDateStar}
+        </if>
+        <if test="importRecord.createDateEnd != null and importRecord.createDateEnd != ''">
+            AND r.CREATE_DATE &lt;= #{importRecord.createDateEnd}
+        </if>
+        ORDER BY r.CREATE_DATE DESC
+    </select>
+
+
+    <select id="getImportRecordLCount" parameterType="importRecord" resultType="int">
+        <include refid="getCount"></include>
+        <if test="importRecord.userId != null and importRecord.userId != ''">
+            AND r.USER_ID = #{importRecord.userId}
+        </if>
+        <if test="importRecord.createDateStar != null and importRecord.createDateStar != ''">
+            AND r.CREATE_DATE &gt;= #{importRecord.createDateStar}
+        </if>
+        <if test="importRecord.createDateEnd != null and importRecord.createDateEnd != ''">
+            AND r.CREATE_DATE &lt;= #{importRecord.createDateEnd}
+        </if>
+    </select>
+
 </mapper>

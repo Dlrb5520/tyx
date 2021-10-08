@@ -25,12 +25,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -63,8 +61,10 @@ public class BasicDataController extends BaseController {
      */
     @PostMapping("import")
     @RequiresPermissions("eximport:import")
-    public FebsResponse importExcels(MultipartFile file) throws IOException {
-
+    public FebsResponse importExcels(MultipartFile file ,String userId) throws IOException {
+        if ("-1".equals(userId)) {
+            return new FebsResponse().fail().message("请选择导入人员");
+        }
         if (file.isEmpty()) {
             throw new FebsException("导入数据为空");
         }
@@ -81,6 +81,7 @@ public class BasicDataController extends BaseController {
             public void onSuccess(int sheet, int row, BasicData basicData) {
                 // 数据校验成功时，加入集合
                 basicData.setImportDate(new Date());
+                basicData.setUserId(Integer.parseInt(userId));
                 data.add(basicData);
             }
 
@@ -95,6 +96,7 @@ public class BasicDataController extends BaseController {
         ImportRecord importRecord = new ImportRecord();
         importRecord.setImportName("导入记录");
         importRecord.setCreateDate(new Date());
+        importRecord.setUserId(Integer.parseInt(userId));
         Long recordId = iImportRecordService.saveImportRecord(importRecord);
 
         if (CollectionUtils.isNotEmpty(data)) {
@@ -174,9 +176,9 @@ public class BasicDataController extends BaseController {
      */
     @GetMapping
     @RequiresPermissions("others:eximport:view")
-    public FebsResponse findBasicData(QueryRequest request) {
+    public FebsResponse findBasicData(QueryRequest request,BasicData basicData) {
         return new FebsResponse().success()
-                .data(getDataTable(basicDataService.findBasicDataList(request, null)));
+                .data(getDataTable(basicDataService.findBasicDataList(request, basicData)));
     }
 
 

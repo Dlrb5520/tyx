@@ -70,6 +70,16 @@ public class ViewController extends BaseController {
         return FebsUtil.view("statistic/data/basicData");
     }
 
+    /**
+     * 导入记录
+     * @return
+     */
+    @GetMapping(FebsConstant.VIEW_PREFIX +"statistic/import/record")
+    @RequiresPermissions("statistic:view")
+    public String importRecord() {
+        return FebsUtil.view("statistic/record/importRecord");
+    }
+
     private void resolveStatisticUserModel(String id, Model model, Boolean transform) {
         StatisticUser user = statisticUserMapper.selectById(id);
         model.addAttribute("statisticUser", user);

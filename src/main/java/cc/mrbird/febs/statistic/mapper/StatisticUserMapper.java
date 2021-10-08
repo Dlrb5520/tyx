@@ -20,5 +20,5 @@ public interface StatisticUserMapper extends BaseMapper<StatisticUser> {
 
     int conutAllStatisticUser (@Param("statisticUser") StatisticUser statisticUser);
 
-    List<StatisticUser>  selectStatisticUserList( @Param("statisticUser") StatisticUser statisticUser);
+    List<StatisticUser>  selectStatisticUserList(@Param("statisticUser") StatisticUser statisticUser);
 }
